@@ -4,7 +4,7 @@ from Retrieval_Function import retrieve_answer
 
 app = FastAPI()
 
-# ✅ Allow all origins (CORS)
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,11 +16,4 @@ app.add_middleware(
 @app.get("/search")
 def search(q: str = Query(..., description="User question")):
     answer, source = retrieve_answer(q)
-    return {
-        "answer": answer,
-        "sources": source
-    }
-
-@app.get("/")
-def root():
-    return {"message": "RAG API is running successfully!"}
+    return {"answer": answer, "sources": source}

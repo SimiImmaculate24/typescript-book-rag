@@ -1,24 +1,18 @@
-# create_embeddings.py
 from sentence_transformers import SentenceTransformer
 import pickle
-from utils import split_text
 
-# Load the TypeScript book robustly
-with open("typescript_book.txt", "r", encoding="utf-8", errors="ignore") as f:
+# Load book
+with open("typescript_book.txt", "r", encoding="utf-8") as f:
     text = f.read()
 
 # Split into chunks
-chunks = split_text(text, chunk_size=500)
+import re
+chunks = re.split(r'\n\n+', text)  # split by paragraphs
 
-# Load model
-model = SentenceTransformer('all-MiniLM-L6-v2')
+# Compute embeddings
+model = SentenceTransformer("all-MiniLM-L6-v2")
+embeddings = model.encode(chunks)
 
-# Generate embeddings
-print("Generating embeddings... this may take a few minutes")
-embeddings = model.encode(chunks, show_progress_bar=True)
-
-# Save chunks and embeddings
+# Save embeddings and chunks
 with open("embeddings.pkl", "wb") as f:
     pickle.dump({"chunks": chunks, "embeddings": embeddings}, f)
-
-print("Saved embeddings.pkl successfully")

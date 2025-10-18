@@ -1,11 +1,27 @@
-def retrieve_answer(query: str):
-    query_lower = query.lower()
+import pickle
+from sentence_transformers import SentenceTransformer
+import numpy as np
 
-    # Match exact phrases the portal uses
-    if "affectionately call the => syntax" in query_lower:
-        return ("fat arrow", "TypeScript Functions Chapter")
-    elif "operator converts any value into an explicit boolean" in query_lower:
-        return ("!!", "Type Conversion Chapter")
-    # Add more portal questions here
-    else:
-        return ("Not found", "General Reference")
+# Load embeddings and chunks
+with open("embeddings.pkl", "rb") as f:
+    data = pickle.load(f)
+
+chunks = data["chunks"]
+embeddings = data["embeddings"]
+
+# Load model
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+def retrieve_answer(query: str):
+    # Embed query
+    query_emb = model.encode([query])[0]
+
+    # Compute cosine similarity
+    sims = np.dot(embeddings, query_emb) / (np.linalg.norm(embeddings, axis=1) * np.linalg.norm(query_emb))
+
+    # Pick the most similar chunk
+    idx = np.argmax(sims)
+    answer = chunks[idx]
+
+    # You can optionally trim or return the exact line that contains the answer
+    return (answer, "TypeScript Book")

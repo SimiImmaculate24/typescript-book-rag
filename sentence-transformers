@@ -1,0 +1,19 @@
+from sentence_transformers import SentenceTransformer
+import numpy as np
+import pickle
+
+model = SentenceTransformer('all-MiniLM-L6-v2')
+
+# Load text chunks
+with open("typescript_book.txt", "r", encoding="utf-8") as f:
+    text = f.read()
+
+from utils import split_text
+chunks = split_text(text)
+
+# Generate embeddings
+embeddings = model.encode(chunks, show_progress_bar=True)
+
+# Save embeddings and chunks for later use
+with open("embeddings.pkl", "wb") as f:
+    pickle.dump({"chunks": chunks, "embeddings": embeddings}, f)

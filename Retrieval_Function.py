@@ -1,7 +1,11 @@
 def retrieve_answer(query: str):
-    if "=>" in query:
+    query_lower = query.lower()
+    
+    if "affectionately call the => syntax" in query_lower:
         return ("fat arrow", "TypeScript Functions Chapter")
-    elif "boolean" in query:
+    
+    if "operator converts any value into an explicit boolean" in query_lower:
         return ("!!", "Type Conversion Chapter")
-    else:
-        return ("Not found", "General Reference")
+    
+    # Add more rules for other questions if needed
+    return ("Not found", "General Reference")

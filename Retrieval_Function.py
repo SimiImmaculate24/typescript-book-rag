@@ -1,4 +1,3 @@
-import torch
 import pickle
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -10,13 +9,12 @@ with open("embeddings.pkl", "rb") as f:
 chunks = data["chunks"]
 embeddings = data["embeddings"]
 
-# Load lightweight model
+# Load lightweight model (optimized for CPU on Render)
 def get_model():
-    # Smallest CPU-friendly model (~200 MB)
+    # Very small and fast model (~200MB)
     return SentenceTransformer("sentence-transformers/paraphrase-MiniLM-L3-v2", device="cpu")
 
 model = get_model()
-
 
 def retrieve_answer(query: str):
     """
@@ -26,9 +24,11 @@ def retrieve_answer(query: str):
     query_emb = model.encode([query])[0]
 
     # Compute cosine similarity
-    sims = np.dot(embeddings, query_emb) / (np.linalg.norm(embeddings, axis=1) * np.linalg.norm(query_emb))
+    sims = np.dot(embeddings, query_emb) / (
+        np.linalg.norm(embeddings, axis=1) * np.linalg.norm(query_emb)
+    )
 
-    # Return the most relevant chunk
+    # Pick the most relevant chunk
     idx = np.argmax(sims)
     answer = chunks[idx]
 

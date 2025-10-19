@@ -11,7 +11,12 @@ chunks = data["chunks"]
 embeddings = data["embeddings"]
 
 # Load lightweight model
-model = SentenceTransformer("all-MiniLM-L6-v2", device="cpu")
+def get_model():
+    # Smallest CPU-friendly model (~200 MB)
+    return SentenceTransformer("sentence-transformers/paraphrase-MiniLM-L3-v2", device="cpu")
+
+model = get_model()
+
 
 def retrieve_answer(query: str):
     """

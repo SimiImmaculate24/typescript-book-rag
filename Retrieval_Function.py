@@ -1,3 +1,6 @@
+import torch
+torch.set_num_threads(1)
+torch.set_num_interop_threads(1)
 import pickle
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -10,7 +13,7 @@ chunks = data["chunks"]
 embeddings = data["embeddings"]
 
 # Load lightweight model
-model = SentenceTransformer("paraphrase-MiniLM-L3-v2")
+model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="cpu")
 
 def retrieve_answer(query: str):
     """

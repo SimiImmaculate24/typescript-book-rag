@@ -1,10 +1,11 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from Retrieval_Function import retrieve_answer
+import os
 
 app = FastAPI()
 
-# Enable CORS
+# Enable CORS for the portal
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,3 +18,9 @@ app.add_middleware(
 def search(q: str = Query(..., description="User question")):
     answer, source = retrieve_answer(q)
     return {"answer": answer, "sources": source}
+
+# Uvicorn startup for Render
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))  # Use Render's assigned port
+    uvicorn.run(app, host="0.0.0.0", port=port)

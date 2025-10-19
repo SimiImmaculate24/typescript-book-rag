@@ -1,27 +1,29 @@
 import pickle
-from sentence_transformers import SentenceTransformer
 import numpy as np
+from sentence_transformers import SentenceTransformer
 
-# Load embeddings and chunks
+# Load precomputed embeddings
 with open("embeddings.pkl", "rb") as f:
     data = pickle.load(f)
 
 chunks = data["chunks"]
 embeddings = data["embeddings"]
 
-# Load model
-model = SentenceTransformer("all-MiniLM-L6-v2")
+# Load lightweight model
+model = SentenceTransformer("paraphrase-MiniLM-L3-v2")
 
 def retrieve_answer(query: str):
-    # Embed query
+    """
+    Returns the most relevant chunk and source for any query
+    """
+    # Embed the query
     query_emb = model.encode([query])[0]
 
     # Compute cosine similarity
     sims = np.dot(embeddings, query_emb) / (np.linalg.norm(embeddings, axis=1) * np.linalg.norm(query_emb))
 
-    # Pick the most similar chunk
+    # Return the most relevant chunk
     idx = np.argmax(sims)
     answer = chunks[idx]
 
-    # You can optionally trim or return the exact line that contains the answer
     return (answer, "TypeScript Book")
